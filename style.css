@@ -1,0 +1,651 @@
+/* ==========================================================
+   SPELL-MAGE GAME STYLESHEET
+   Tree Bark & Moss Aesthetic, Glassmorphic Transparent Keyboard
+   ========================================================== */
+
+:root {
+  --wood-dark: #231208;
+  --wood-mid: #3d2314;
+  --wood-light: #5a3821;
+  --wood-border: #7c502d;
+  --gold-accent: #ffd700;
+  --gold-glow: rgba(255, 215, 0, 0.4);
+  --moss-light: #62a838;
+  --moss-dark: #2d5a16;
+  --moss-shadow: rgba(20, 45, 10, 0.6);
+  --text-gold: #fff0a5;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #0b0714;
+  font-family: 'Outfit', sans-serif;
+  color: #ffffff;
+}
+
+#game-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  max-width: 500px;
+  margin: 0 auto;
+  overflow: hidden;
+  background: #0b0714;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+}
+
+/* Canvas */
+#gameCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 1;
+}
+
+/* Helper Utilities */
+.hidden {
+  display: none !important;
+}
+
+/* HUD Overlay */
+#hud {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: auto;
+}
+
+.hud-left, .hud-center, .hud-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-box {
+  background: linear-gradient(135deg, rgba(35, 18, 8, 0.85), rgba(61, 35, 20, 0.85));
+  border: 2px solid var(--wood-border);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.8), 0 4px 10px rgba(0,0,0,0.5);
+  border-radius: 12px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-gold);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.level-box {
+  border-color: #ffd700;
+  background: linear-gradient(135deg, rgba(60, 30, 0, 0.9), rgba(120, 80, 0, 0.9));
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+#level-count {
+  color: #ffd700;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.stat-label {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 11px;
+  color: #e0c987;
+}
+
+#hearts-container {
+  display: flex;
+  gap: 3px;
+  font-size: 16px;
+}
+
+.heart {
+  filter: drop-shadow(0 0 4px rgba(255, 0, 0, 0.6));
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.heart.lost {
+  opacity: 0.25;
+  filter: grayscale(100%);
+  transform: scale(0.8);
+}
+
+/* Target Word Display */
+#word-target-bar {
+  position: absolute;
+  top: 65px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  background: linear-gradient(90deg, rgba(20, 10, 35, 0.9), rgba(50, 25, 75, 0.9));
+  border: 2px solid rgba(255, 215, 0, 0.6);
+  border-radius: 20px;
+  padding: 6px 20px;
+  font-size: 16px;
+  font-weight: 800;
+  box-shadow: 0 0 15px rgba(157, 78, 221, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#target-prompt {
+  color: #b892ff;
+  font-size: 12px;
+}
+
+#target-word-display {
+  color: var(--gold-accent);
+  letter-spacing: 2px;
+  font-size: 18px;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+}
+
+/* Level Up Notification Banner */
+#levelup-banner {
+  position: absolute;
+  top: 130px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 45;
+  background: linear-gradient(90deg, rgba(255, 215, 0, 0.95), rgba(255, 140, 0, 0.95));
+  border: 3px solid #ffffff;
+  border-radius: 30px;
+  padding: 10px 28px;
+  color: #000000;
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 900;
+  font-size: 18px;
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.9), 0 6px 20px rgba(0, 0, 0, 0.8);
+  animation: bannerPulse 0.6s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+@keyframes bannerPulse {
+  0% { transform: translateX(-50%) scale(1); }
+  100% { transform: translateX(-50%) scale(1.1); }
+}
+
+/* QUICK POTION ACTION BAR (Above Transparent Keyboard) */
+#potion-bar {
+  position: absolute;
+  bottom: 188px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 35;
+  display: flex;
+  gap: 12px;
+  background: rgba(25, 12, 5, 0.75);
+  border: 2px solid #7c502d;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 16px;
+  padding: 6px 14px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), 0 0 10px rgba(255, 215, 0, 0.2);
+}
+
+.potion-btn {
+  position: relative;
+  background: linear-gradient(180deg, #5a3821, #231208);
+  border: 2px solid #7c502d;
+  border-radius: 12px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #fff8dc;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #120803;
+  transition: all 0.15s ease;
+}
+
+.potion-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #120803;
+}
+
+.potion-icon {
+  font-size: 18px;
+}
+
+.potion-count {
+  background: #ffd700;
+  color: #000;
+  border-radius: 10px;
+  padding: 1px 6px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+/* MOSSY WOOD BUTTONS & PANELS (Robust Tree Bark with Moss Overlay) */
+.mossy-wood-btn {
+  position: relative;
+  width: 100%;
+  padding: 12px 18px;
+  background: linear-gradient(180deg, #5a3821 0%, #3d2314 45%, #231208 100%);
+  border: 3px solid #7c502d;
+  border-radius: 14px;
+  color: #fff8dc;
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 900;
+  font-size: 15px;
+  text-shadow: 2px 2px 4px #000000;
+  cursor: pointer;
+  box-shadow: 
+    0 5px 0 #150903,
+    0 8px 15px rgba(0, 0, 0, 0.6),
+    inset 0 2px 3px rgba(255, 255, 255, 0.2);
+  transition: all 0.15s ease;
+  overflow: visible;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.mossy-wood-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 7px 0 #150903,
+    0 12px 20px rgba(0, 0, 0, 0.7),
+    0 0 15px var(--gold-glow);
+  border-color: var(--gold-accent);
+}
+
+.mossy-wood-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #150903, 0 4px 8px rgba(0,0,0,0.5);
+}
+
+.mossy-wood-btn.btn-large {
+  font-size: 18px;
+  padding: 15px 20px;
+  background: linear-gradient(180deg, #6e462a 0%, #4a2b19 45%, #2d160a 100%);
+}
+
+.mossy-wood-btn.btn-small {
+  width: auto;
+  min-width: 140px;
+  padding: 10px 20px;
+  font-size: 14px;
+}
+
+/* Moss Canopy Overlays on Buttons */
+.moss-overlay, .moss-top {
+  position: absolute;
+  top: -8px;
+  left: 10%;
+  right: 10%;
+  height: 12px;
+  background: linear-gradient(90deg, 
+    var(--moss-dark) 0%, 
+    var(--moss-light) 25%, 
+    #7dbb42 50%, 
+    var(--moss-light) 75%, 
+    var(--moss-dark) 100%
+  );
+  border-radius: 10px 10px 4px 4px;
+  box-shadow: 0 3px 6px var(--moss-shadow);
+  pointer-events: none;
+}
+
+/* Main Menu Overlay (POSITIONED BELOW THE WIZARD'S FACE) */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* Positioned below wizard's face! */
+  align-items: center;
+  padding-bottom: 6vh;
+}
+
+.menu-background-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle, #1a0a2a 0%, #07030c 100%);
+}
+
+.menu-background-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  filter: brightness(0.95) contrast(1.05);
+}
+
+.wood-panel {
+  width: 86%;
+  background: linear-gradient(180deg, rgba(45, 25, 12, 0.92) 0%, rgba(25, 12, 5, 0.95) 100%);
+  border: 4px solid #7c502d;
+  border-radius: 24px;
+  padding: 18px 16px;
+  box-shadow: 
+    0 0 30px rgba(0, 0, 0, 0.9),
+    inset 0 0 15px rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(255, 215, 0, 0.2);
+  position: relative;
+  text-align: center;
+}
+
+.wood-header {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.moss-canopy {
+  position: absolute;
+  top: -28px;
+  left: -4px;
+  right: -4px;
+  height: 22px;
+  background: radial-gradient(circle, #528c31 30%, #2d5a16 70%);
+  border-radius: 16px 16px 6px 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+}
+
+.game-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 28px;
+  font-weight: 900;
+  background: linear-gradient(180deg, #fff7c2 0%, #ffd700 50%, #d4af37 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 3px 4px #000000);
+  letter-spacing: 2px;
+}
+
+.game-subtitle {
+  font-size: 12px;
+  color: #d1b894;
+  margin-top: 2px;
+}
+
+/* Modals */
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(5px);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.mossy-wood-card {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  background: linear-gradient(180deg, #3d2314 0%, #231208 100%);
+  border: 4px solid #7c502d;
+  border-radius: 20px;
+  padding: 24px 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 25px rgba(98, 168, 56, 0.3);
+  text-align: center;
+}
+
+.moss-top-border {
+  position: absolute;
+  top: -14px;
+  left: 15%;
+  right: 15%;
+  height: 16px;
+  background: linear-gradient(90deg, #2d5a16, #62a838, #2d5a16);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+}
+
+.mossy-wood-card h2 {
+  font-family: 'Cinzel Decorative', serif;
+  color: var(--text-gold);
+  font-size: 22px;
+  margin-bottom: 16px;
+}
+
+/* Settings Items & 2x2 Background Selector Grid */
+.setting-item {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.setting-item label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #e0c987;
+  margin-bottom: 8px;
+}
+
+.difficulty-options {
+  display: flex;
+  gap: 8px;
+}
+
+.bg-options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.diff-btn, .bg-select-btn {
+  padding: 10px 6px;
+  background: #1e0f07;
+  border: 2px solid #5a3821;
+  border-radius: 10px;
+  color: #ccc;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 12px;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.diff-btn small {
+  font-size: 10px;
+  color: #ffd700;
+  margin-top: 2px;
+}
+
+.diff-btn.active, .bg-select-btn.active {
+  background: linear-gradient(180deg, #4a8029, #254a14);
+  border-color: #7dbb42;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(125, 187, 66, 0.4);
+}
+
+/* Shop Modal */
+.shop-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #5a3821;
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+}
+
+.shop-coins-display {
+  font-size: 15px;
+  color: var(--gold-accent);
+}
+
+.shop-items-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+  max-height: 58vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.shop-item-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(20, 10, 5, 0.6);
+  border: 2px solid #5a3821;
+  border-radius: 12px;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.shop-item-icon {
+  font-size: 26px;
+}
+
+.shop-item-info {
+  flex: 1;
+}
+
+.shop-item-info h3 {
+  font-size: 13px;
+  color: #fff8dc;
+}
+
+.shop-item-info p {
+  font-size: 11px;
+  color: #bbb;
+}
+
+.buy-btn {
+  background: linear-gradient(180deg, #ffd700, #b8860b);
+  border: 2px solid #fff0a5;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #000;
+  font-weight: 800;
+  font-size: 12px;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #664d03;
+  white-space: nowrap;
+}
+
+.buy-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #664d03;
+}
+
+#shop-msg {
+  font-size: 12px;
+  color: #7dbb42;
+  margin-bottom: 8px;
+  min-height: 18px;
+}
+
+/* Game Over Stats */
+.gameover-stats {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid #5a3821;
+  border-radius: 10px;
+  padding: 12px;
+  margin: 16px 0;
+  display: flex;
+  justify-content: space-around;
+  font-size: 14px;
+}
+
+.gameover-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+/* CUSTOM TRANSPARENT ON-SCREEN KEYBOARD FOR ANDROID */
+#transparent-keyboard {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  background: rgba(12, 8, 24, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 2px solid rgba(255, 215, 0, 0.3);
+  padding: 8px 4px 16px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.6);
+}
+
+.kb-row {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.kb-key {
+  flex: 1;
+  max-width: 44px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  color: #ffffff;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+  transition: all 0.1s ease;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.kb-key:active, .kb-key.active-tap {
+  background: rgba(255, 215, 0, 0.45);
+  border-color: #ffd700;
+  transform: scale(0.92);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.8);
+}
+
+.kb-action {
+  flex: 1.4;
+  max-width: 65px;
+  font-size: 12px;
+  background: rgba(157, 78, 221, 0.3);
+  border-color: rgba(184, 146, 255, 0.4);
+}

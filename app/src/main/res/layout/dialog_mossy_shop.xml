@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="320dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#3D2314"
+    android:padding="20dp"
+    android:gravity="center">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🧪 TIENDA MÁGICA"
+        android:textColor="#FFD700"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:id="@+id/tv_shop_coins"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0 🪙"
+        android:textColor="#FFF0A5"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp"/>
+
+    <Button
+        android:id="@+id/btn_buy_max_hp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="💖 Aumentar Salud Máx (+1 HP) - 200 🪙"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:layout_marginBottom="6dp"/>
+
+    <Button
+        android:id="@+id/btn_buy_heal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="❤️ Restaurar Salud (+1 HP) - 30 🪙"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:layout_marginBottom="6dp"/>
+
+    <Button
+        android:id="@+id/btn_buy_freeze"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="❄️ Poción de Hielo (8s) - 10 🪙"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:layout_marginBottom="6dp"/>
+
+    <Button
+        android:id="@+id/btn_buy_nuke"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="💥 Bomba Arcana - 20 🪙"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:layout_marginBottom="14dp"/>
+
+    <Button
+        android:id="@+id/btn_close_shop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="VOLVER"
+        android:textColor="#000000"
+        android:backgroundTint="#FFD700"/>
+
+</LinearLayout>

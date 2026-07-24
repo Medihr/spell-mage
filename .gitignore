@@ -1,0 +1,12 @@
+# Android / Gradle Build
+.gradle/
+build/
+app/build/
+*.apk
+*.aar
+
+# IDE & System Files
+.idea/
+*.iml
+.DS_Store
+Thumbs.db

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.SpellMage" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/gold_accent</item>
+        <item name="colorPrimaryVariant">@color/wood_dark</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+</resources>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0B0714">
+
+    <!-- 1. Game Canvas SurfaceView -->
+    <com.spellmage.game.GameView
+        android:id="@+id/game_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- 2. Top HUD Bar -->
+    <LinearLayout
+        android:id="@+id/hud_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:gravity="center_vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_hp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="❤️ ❤️ ❤️"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tv_coins"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0 🪙"
+            android:textColor="#FFD700"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginEnd="16dp"/>
+
+        <Button
+            android:id="@+id/btn_pause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⏸️ PAUSA"
+            android:textSize="12sp"
+            android:backgroundTint="#3D2314"
+            android:textColor="#FFD700"/>
+
+    </LinearLayout>
+
+    <!-- 3. Main Menu Overlay -->
+    <LinearLayout
+        android:id="@+id/main_menu_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="bottom|center_horizontal"
+        android:padding="24dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#DB231208"
+            android:padding="24dp"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SPELL-MAGE"
+                android:textColor="#FFD700"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Escribe los hechizos antes de que caigan"
+                android:textColor="#D1B894"
+                android:textSize="13sp"
+                android:layout_marginBottom="24dp"/>
+
+            <Button
+                android:id="@+id/btn_play"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="✨ PLAY ✨"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#000000"
+                android:backgroundTint="#FFD700"
+                android:layout_marginBottom="12dp"/>
+
+            <Button
+                android:id="@+id/btn_settings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="📜 MENU / DIFICULTAD"
+                android:textColor="#FFF8DC"
+                android:backgroundTint="#5A3821"
+                android:layout_marginBottom="12dp"/>
+
+            <Button
+                android:id="@+id/btn_shop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🧪 SHOP"
+                android:textColor="#FFF8DC"
+                android:backgroundTint="#5A3821"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- 4. Transparent Keyboard View at Bottom -->
+    <com.spellmage.game.TransparentKeyboardView
+        android:id="@+id/transparent_keyboard"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:layout_gravity="bottom"
+        android:visibility="gone" />
+
+</FrameLayout>

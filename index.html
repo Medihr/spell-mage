@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Spell-Mage - Juego de Magia y Ortografía</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=MedievalSharp&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Container for the entire game -->
+  <div id="game-container">
+
+    <!-- Game Canvas for background, falling blocks, magic dust trails, and spark explosions -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Top HUD (Score, Coins, HP, Level, Pause) -->
+    <div id="hud" class="hidden">
+      <div class="hud-left">
+        <div class="stat-box hp-box">
+          <span class="stat-label">VIDA:</span>
+          <div id="hearts-container">
+            <span class="heart active">❤️</span>
+            <span class="heart active">❤️</span>
+            <span class="heart active">❤️</span>
+          </div>
+        </div>
+        <div class="stat-box coins-box">
+          <span class="stat-icon">🪙</span>
+          <span id="coins-count">0</span>
+        </div>
+      </div>
+
+      <div class="hud-center">
+        <div class="stat-box level-box">
+          <span class="stat-label">NIVEL:</span>
+          <span id="level-count">1</span>
+        </div>
+        <div class="stat-box score-box">
+          <span class="stat-label">SCORE:</span>
+          <span id="score-count">0</span>
+        </div>
+      </div>
+
+      <div class="hud-right">
+        <button id="btn-pause" class="mossy-btn-sm">
+          <span class="moss-top"></span>
+          <span>⏸️ PAUSA</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Active Target Word Display Indicator -->
+    <div id="word-target-bar" class="hidden">
+      <span id="target-prompt">Escribe: </span>
+      <span id="target-word-display">...</span>
+    </div>
+
+    <!-- Level Up Banner Notification -->
+    <div id="levelup-banner" class="hidden">
+      <span id="levelup-text">¡NIVEL 2 ALCANZADO!</span>
+    </div>
+
+    <!-- Quick Potion Action Bar (Above Keyboard during gameplay) -->
+    <div id="potion-bar" class="hidden">
+      <button class="potion-btn" id="btn-use-heal">
+        <span class="potion-icon">❤️</span>
+        <span class="potion-label">+1 HP</span>
+        <span class="potion-count" id="count-heal">0</span>
+      </button>
+      <button class="potion-btn" id="btn-use-freeze">
+        <span class="potion-icon">❄️</span>
+        <span class="potion-label">Hielo</span>
+        <span class="potion-count" id="count-freeze">0</span>
+      </button>
+      <button class="potion-btn" id="btn-use-nuke">
+        <span class="potion-icon">💥</span>
+        <span class="potion-label">Bomba</span>
+        <span class="potion-count" id="count-nuke">0</span>
+      </button>
+    </div>
+
+    <!-- Main Menu Overlay -->
+    <div id="main-menu-overlay" class="overlay">
+      <div class="menu-background-container">
+        <img src="assets/fondomenu.jpeg" alt="Fondo Menu Spell-Mage" id="img-menu-bg">
+      </div>
+      <div class="wood-panel menu-mid-position">
+        <div class="wood-header">
+          <div class="moss-canopy"></div>
+          <h1 class="game-title">SPELL-MAGE</h1>
+          <p class="game-subtitle">Escribe los hechizos antes de que caigan</p>
+        </div>
+
+        <div class="menu-buttons-group">
+          <!-- PLAY BUTTON -->
+          <button id="btn-play" class="mossy-wood-btn btn-large">
+            <span class="moss-overlay"></span>
+            <span class="btn-text">✨ PLAY ✨</span>
+          </button>
+
+          <!-- MENU / SETTINGS BUTTON -->
+          <button id="btn-settings" class="mossy-wood-btn">
+            <span class="moss-overlay"></span>
+            <span class="btn-text">📜 MENU / DIFICULTAD</span>
+          </button>
+
+          <!-- SHOP BUTTON -->
+          <button id="btn-shop" class="mossy-wood-btn">
+            <span class="moss-overlay"></span>
+            <span class="btn-text">🧪 SHOP</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings / Menu Modal -->
+    <div id="settings-modal" class="modal-overlay hidden">
+      <div class="mossy-wood-card">
+        <div class="moss-top-border"></div>
+        <h2>📜 MENU DE AJUSTES</h2>
+        
+        <div class="setting-item">
+          <label>DIFICULTAD Y VELOCIDAD:</label>
+          <div class="difficulty-options">
+            <button class="diff-btn active" data-diff="lento">
+              <span>🐢 Lento</span>
+              <small>Coins x1.0</small>
+            </button>
+            <button class="diff-btn" data-diff="medio">
+              <span>⚡ Medio</span>
+              <small>Coins x1.5</small>
+            </button>
+            <button class="diff-btn" data-diff="rapido">
+              <span>🔥 Rápido</span>
+              <small>Coins x2.5</small>
+            </button>
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <label>FONDO DE JUEGO:</label>
+          <div class="bg-options-grid">
+            <button class="bg-select-btn active" data-bg="bg_mago_estelar.jpg">
+              <span>🌌 Mago Estelar</span>
+            </button>
+            <button class="bg-select-btn" data-bg="bg_mago_vortice.jpg">
+              <span>🌀 Mago Vórtice</span>
+            </button>
+            <button class="bg-select-btn" data-bg="bg_mago_varita.jpg">
+              <span>🪄 Mago Varita</span>
+            </button>
+            <button class="bg-select-btn" data-bg="bg_mago_galactico.jpg">
+              <span>🔮 Mago Galáctico</span>
+            </button>
+          </div>
+        </div>
+
+        <button id="btn-close-settings" class="mossy-wood-btn btn-small">
+          <span class="moss-overlay"></span>
+          <span>ACEPTAR</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Shop Modal -->
+    <div id="shop-modal" class="modal-overlay hidden">
+      <div class="mossy-wood-card shop-card">
+        <div class="moss-top-border"></div>
+        <div class="shop-header">
+          <h2>🧪 TIENDA MÁGICA</h2>
+          <div class="shop-coins-display">
+            <span>🪙 Monedas:</span> <strong id="shop-coins-val">0</strong>
+          </div>
+        </div>
+
+        <div class="shop-items-grid">
+          <!-- Item 1: Increase Max HP -->
+          <div class="shop-item-box">
+            <div class="shop-item-icon">💖</div>
+            <div class="shop-item-info">
+              <h3>Aumentar Salud Máx (+1 Max HP)</h3>
+              <p>Aumenta permanentemente el contenedor máximo de vida</p>
+            </div>
+            <button class="buy-btn" data-item="max_hp" data-cost="200">
+              <span>200 🪙</span>
+            </button>
+          </div>
+
+          <!-- Item 2: Heal 1 HP -->
+          <div class="shop-item-box">
+            <div class="shop-item-icon">❤️</div>
+            <div class="shop-item-info">
+              <h3>Restaurar Salud (+1 HP)</h3>
+              <p>Restauración o poción de cura para usar en juego</p>
+            </div>
+            <button class="buy-btn" data-item="heal_hp" data-cost="30">
+              <span>30 🪙</span>
+            </button>
+          </div>
+
+          <!-- Item 3: Freeze Potion -->
+          <div class="shop-item-box">
+            <div class="shop-item-icon">❄️</div>
+            <div class="shop-item-info">
+              <h3>Poción de Hielo (8s)</h3>
+              <p>Poción para ralentizar bloques en el juego</p>
+            </div>
+            <button class="buy-btn" data-item="freeze" data-cost="10">
+              <span>10 🪙</span>
+            </button>
+          </div>
+
+          <!-- Item 4: Magic Blast Nuke -->
+          <div class="shop-item-box">
+            <div class="shop-item-icon">💥</div>
+            <div class="shop-item-info">
+              <h3>Bomba Arcana</h3>
+              <p>Bomba para detonar todos los bloques en pantalla</p>
+            </div>
+            <button class="buy-btn" data-item="nuke" data-cost="20">
+              <span>20 🪙</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="shop-msg"></div>
+
+        <button id="btn-close-shop" class="mossy-wood-btn btn-small">
+          <span class="moss-overlay"></span>
+          <span>VOLVER</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="gameover-modal" class="modal-overlay hidden">
+      <div class="mossy-wood-card gameover-card">
+        <div class="moss-top-border"></div>
+        <h2>💀 ¡FIN DEL JUEGO! 💀</h2>
+        <p class="gameover-desc">Los bloques mágicos superaron tu defensa.</p>
+        
+        <div class="gameover-stats">
+          <div><span>Puntuación:</span> <strong id="go-score">0</strong></div>
+          <div><span>Monedas Conseguidas:</span> <strong id="go-coins">0</strong></div>
+        </div>
+
+        <div class="gameover-buttons">
+          <button id="btn-restart" class="mossy-wood-btn">
+            <span class="moss-overlay"></span>
+            <span>🔄 REINTENTAR</span>
+          </button>
+          <button id="btn-main-menu" class="mossy-wood-btn">
+            <span class="moss-overlay"></span>
+            <span>🏠 MENÚ PRINCIPAL</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom Transparent On-Screen Keyboard -->
+    <div id="transparent-keyboard" class="hidden">
+      <div class="kb-row">
+        <button class="kb-key" data-key="Q">Q</button>
+        <button class="kb-key" data-key="W">W</button>
+        <button class="kb-key" data-key="E">E</button>
+        <button class="kb-key" data-key="R">R</button>
+        <button class="kb-key" data-key="T">T</button>
+        <button class="kb-key" data-key="Y">Y</button>
+        <button class="kb-key" data-key="U">U</button>
+        <button class="kb-key" data-key="I">I</button>
+        <button class="kb-key" data-key="O">O</button>
+        <button class="kb-key" data-key="P">P</button>
+      </div>
+      <div class="kb-row">
+        <button class="kb-key" data-key="A">A</button>
+        <button class="kb-key" data-key="S">S</button>
+        <button class="kb-key" data-key="D">D</button>
+        <button class="kb-key" data-key="F">F</button>
+        <button class="kb-key" data-key="G">G</button>
+        <button class="kb-key" data-key="H">H</button>
+        <button class="kb-key" data-key="J">J</button>
+        <button class="kb-key" data-key="K">K</button>
+        <button class="kb-key" data-key="L">L</button>
+        <button class="kb-key" data-key="Ñ">Ñ</button>
+      </div>
+      <div class="kb-row">
+        <button class="kb-key kb-action" data-key="CLEAR">LIMPIAR</button>
+        <button class="kb-key" data-key="Z">Z</button>
+        <button class="kb-key" data-key="X">X</button>
+        <button class="kb-key" data-key="C">C</button>
+        <button class="kb-key" data-key="V">V</button>
+        <button class="kb-key" data-key="B">B</button>
+        <button class="kb-key" data-key="N">N</button>
+        <button class="kb-key" data-key="M">M</button>
+        <button class="kb-key kb-action" data-key="BACK">⌫</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
